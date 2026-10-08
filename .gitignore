@@ -1,0 +1,52 @@
+# Python virtual environments
+palm_env/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Jupyter Notebook temporary files
+.ipynb_checkpoints/
+
+# Uploaded files
+uploads/
+
+# Generated detection results
+results/
+
+# Environment variables and secrets
+.env
+*.env
+
+# Database files and backups
+*.mdf
+*.ldf
+*.bak
+
+# Log files
+*.log
+
+# IDE settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# YOLO training outputs
+runs/
+
+# Dataset
+dataset/
+datasets/
+
+# Local model weights
+*.pt
+*.onnx
+
+# Temporary files
+*.tmp
+*.temp

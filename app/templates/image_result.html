@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Detection Result</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:            #d4a017;
+      --gold-light:      #f0c040;
+      --text-main:       #f0ede6;
+      --text-muted:      #a8c5a0;
+      --card-bg:         rgba(10, 30, 15, 0.88);
+      --radius:          16px;
+      --ripe-color:      #22c55e;
+      --semiripe-color:  #f59e0b;
+      --unripe-color:    #3b82f6;
+      --nofruit-color:   #ef4444;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 20% 10%, #1a4a28 0%, #0a1f11 55%, #000f07 100%);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 500px; height: 500px;
+      background: #166534;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.15;
+      top: -150px; left: -150px;
+      pointer-events: none;
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold-light);
+      font-size: clamp(22px, 4vw, 32px);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .result-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(212,160,23,0.22);
+      border-radius: var(--radius);
+      padding: 32px 32px 28px;
+      max-width: 720px;
+      width: 100%;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    }
+
+    .result-img {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(212,160,23,0.2);
+      display: block;
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .badge.ripe      { background: rgba(34,197,94,0.18);  color: var(--ripe-color);     border: 1px solid var(--ripe-color); }
+    .badge.semi-ripe { background: rgba(245,158,11,0.18); color: var(--semiripe-color); border: 1px solid var(--semiripe-color); }
+    .badge.unripe    { background: rgba(59,130,246,0.18); color: var(--unripe-color);   border: 1px solid var(--unripe-color); }
+    .badge.no-fruit  { background: rgba(239,68,68,0.18);  color: var(--nofruit-color);  border: 1px solid var(--nofruit-color); }
+
+    .message {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 20px;
+    }
+
+    .conf-row { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .conf-label { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+    .conf-bar-wrap { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; }
+    .conf-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); transition: width 1s ease; }
+    .conf-pct { font-size: 14px; font-weight: 700; color: var(--gold-light); white-space: nowrap; }
+
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      border: none;
+      display: inline-block;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-back {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-main);
+    }
+    .btn-download {
+      background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);
+      color: #0d2b1a;
+    }
+  </style>
+</head>
+<body>
+
+<h1 class="page-title">🌴 Detection Result — Image</h1>
+
+<div class="result-card">
+
+  <img
+    class="result-img"
+    src="{{ url_for('static', filename='results/' + filename) }}"
+    alt="Detection Result"
+  />
+
+  {% if detected %}
+    {% set lbl_lower = label | lower | trim %}
+    {% if lbl_lower == 'ripe' %}
+      <span class="badge ripe">Ripe</span>
+    {% elif lbl_lower == 'semi-ripe' or lbl_lower == 'semi_ripe' or lbl_lower == 'semiripe' %}
+      <span class="badge semi-ripe">Semi-Ripe</span>
+    {% elif lbl_lower == 'unripe' %}
+      <span class="badge unripe">Unripe</span>
+    {% else %}
+      <span class="badge unripe">{{ label }}</span>
+    {% endif %}
+  {% else %}
+    <span class="badge no-fruit">No Fruit Detected</span>
+  {% endif %}
+
+  <p class="message">{{ message }}</p>
+
+  {% if detected %}
+  <div class="conf-row">
+    <span class="conf-label">Confidence</span>
+    <div class="conf-bar-wrap">
+      <div class="conf-bar-fill" id="confBar" style="width:0%"></div>
+    </div>
+    <span class="conf-pct">{{ confidence }}%</span>
+  </div>
+  {% endif %}
+
+  <div class="btn-row">
+    <a href="/" class="btn btn-back">← Back</a>
+    <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-download">⬇ Download Image</a>
+  </div>
+
+</div>
+
+{% if detected %}
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('confBar').style.width = '{{ confidence }}%';
+    }, 200);
+  });
+</script>
+{% endif %}
+
+</body>
+</html>

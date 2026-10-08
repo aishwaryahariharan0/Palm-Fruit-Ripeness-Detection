@@ -1,0 +1,14 @@
+# Web Framework
+Flask==3.1.2
+
+# Deep Learning / Object Detection
+ultralytics==8.3.0
+
+# Computer Vision
+opencv-python==4.10.0.84
+
+# Numerical Computing
+numpy==1.26.4
+
+# SQL Server Database Connectivity
+pyodbc==5.2.0
